@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.permissions.sysrole.mapper.SysRoleMapper" >
+    <resultMap id="SysRole" type="com.platform.permissions.sysrole.model.SysRole">
+		<id property="id" column="id" jdbcType="NUMERIC"/>
+		<result property="systemid" column="systemid" jdbcType="NUMERIC"/>
+		<result property="alias" column="alias" jdbcType="VARCHAR"/>
+		<result property="rolename" column="rolename" jdbcType="VARCHAR"/>
+		<result property="remark" column="remark" jdbcType="VARCHAR"/>
+		<result property="allowdel" column="allowdel" jdbcType="NUMERIC"/>
+		<result property="allowedit" column="allowedit" jdbcType="NUMERIC"/>
+		<result property="enabled" column="enabled" jdbcType="NUMERIC"/>
+		<result property="createdate" column="createdate" jdbcType="DATE"/>
+	</resultMap>
+	<sql id="columns">
+		id,systemid,alias,rolename,remark,allowdel,allowedit,enabled,createdate
+	</sql>
+	<sql id="dynamicWhere">
+		<where>
+			<if test="@Ognl@isNotEmpty(id)"> AND id  =#{id} </if>
+			<if test="@Ognl@isNotEmpty(systemid)"> AND systemid  =#{systemid} </if>
+			<if test="@Ognl@isNotEmpty(alias)"> AND instr(alias,'${alias}')>0  </if>
+			<if test="@Ognl@isNotEmpty(aliasEquals)"> AND alias  =#{aliasEquals}  </if>
+			<if test="@Ognl@isNotEmpty(rolename)"> AND instr(rolename,'${rolename}')>0  </if>
+			<if test="@Ognl@isNotEmpty(rolenameEquals)"> AND rolename  =#{rolenameEquals}  </if>
+			<if test="@Ognl@isNotEmpty(remark)"> AND instr(remark,'${remark}')>0  </if>
+			<if test="@Ognl@isNotEmpty(remarkEquals)"> AND remark  =#{remarkEquals}  </if>
+			<if test="@Ognl@isNotEmpty(allowdel)"> AND allowdel  =#{allowdel} </if>
+			<if test="@Ognl@isNotEmpty(allowedit)"> AND allowedit  =#{allowedit} </if>
+			<if test="@Ognl@isNotEmpty(enabled)"> AND enabled  =#{enabled} </if>
+			<if test="@Ognl@isNotEmpty(createdate)"> AND createdate  =#{createdate} </if>
+			<if test="@Ognl@isNotEmpty(begincreatedate)"> AND createdate  >=#{begincreatedate,jdbcType=DATE} </if>
+			<if test="@Ognl@isNotEmpty(endcreatedate)"> AND createdate <![CDATA[ <=#{endcreatedate,jdbcType=DATE}]]> </if>
+			<if test="@Ognl@isNotEmpty(search)"> AND  
+					(	
+							instr(id,'${search}')>0    or 
+							instr(systemid,'${search}')>0    or 
+							instr(alias,'${search}')>0    or 
+							instr(rolename,'${search}')>0    or 
+							instr(remark,'${search}')>0    or 
+							instr(allowdel,'${search}')>0    or 
+							instr(allowedit,'${search}')>0    or 
+							instr(enabled,'${search}')>0    or 
+							instr(createdate,'${search}')>0  
+					)  
+			</if>
+		</where>
+	</sql>
+	<insert id="add" parameterType="com.platform.permissions.sysrole.model.SysRole">
+        insert into SYS_ROLE
+		(<include refid="columns"/>)
+		values
+		(
+			#{id,jdbcType=NUMERIC}, 
+			#{systemid,jdbcType=NUMERIC}, 
+			#{alias,jdbcType=VARCHAR}, 
+			#{rolename,jdbcType=VARCHAR}, 
+			#{remark,jdbcType=VARCHAR}, 
+			#{allowdel,jdbcType=NUMERIC}, 
+			#{allowedit,jdbcType=NUMERIC}, 
+			#{enabled,jdbcType=NUMERIC}, 
+			#{createdate,jdbcType=DATE}
+		)
+    </insert>
+    <update id="update" parameterType="com.platform.permissions.sysrole.model.SysRole">
+		update SYS_ROLE set
+		id=#{id,jdbcType=NUMERIC},
+		systemid=#{systemid,jdbcType=NUMERIC},
+		alias=#{alias,jdbcType=VARCHAR},
+		rolename=#{rolename,jdbcType=VARCHAR},
+		remark=#{remark,jdbcType=VARCHAR},
+		allowdel=#{allowdel,jdbcType=NUMERIC},
+		allowedit=#{allowedit,jdbcType=NUMERIC},
+		enabled=#{enabled,jdbcType=NUMERIC},
+		createdate=#{createdate,jdbcType=DATE}
+		WHERE
+		ID=#{id}
+	</update>
+	<select id="getById" parameterType="Long" resultType="com.platform.permissions.sysrole.model.SysRole">
+        select <include refid="columns"/> from SYS_ROLE where ID=#{id}
+    </select>
+     <delete id="delById" parameterType="Long" >
+        delete from  SYS_ROLE where ID=#{id}
+    </delete>
+    <select id="queryTotal"  resultType="Integer">
+        select count(*) from SYS_ROLE 
+        <include refid="dynamicWhere" /> 
+    </select>
+    <select id="queryAll"  resultMap="SysRole">
+        select <include refid="columns"/> from SYS_ROLE 
+        <include refid="dynamicWhere" /> 
+        <if test="@Ognl@isNotEmpty(sort)">
+			order by ${sort} ${order}
+		</if>
+		<if test="@Ognl@isEmpty(sort)">
+			order by id  desc
+		</if>
+    </select>
+     <!-- 根据用户id获取用户拥有的角色信息 -->
+     <select id="queryUsersAllRoleByUserid"  resultMap="SysRole">
+	    select d.id,d.rolename from sys_role d 
+	       where d.id in(
+	             select distinct(a.roleid) from sys_user_role a where a.userid=${userid}
+	       )
+    </select>
+</mapper>

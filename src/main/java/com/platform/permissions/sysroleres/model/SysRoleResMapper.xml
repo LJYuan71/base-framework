@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.permissions.sysroleres.mapper.SysRoleResMapper" >
+    <resultMap id="SysRoleRes" type="com.platform.permissions.sysroleres.model.SysRoleRes">
+		<id property="id" column="id" jdbcType="NUMERIC"/>
+		<result property="roleid" column="roleid" jdbcType="NUMERIC"/>
+		<result property="resid" column="resid" jdbcType="NUMERIC"/>
+	</resultMap>
+	<sql id="columns">
+		id,roleid,resid
+	</sql>
+	<sql id="dynamicWhere">
+		<where>
+			<if test="@Ognl@isNotEmpty(id)"> AND id  =#{id} </if>
+			<if test="@Ognl@isNotEmpty(roleid)"> AND roleid  =#{roleid} </if>
+			<if test="@Ognl@isNotEmpty(resid)"> AND resid  =#{resid} </if>
+			<if test="@Ognl@isNotEmpty(search)"> AND  
+					(	
+							instr(id,'${search}')>0    or 
+							instr(roleid,'${search}')>0    or 
+							instr(resid,'${search}')>0  
+					)  
+			</if>
+		</where>
+	</sql>
+	<insert id="add" parameterType="com.platform.permissions.sysroleres.model.SysRoleRes">
+        insert into SYS_ROLE_RES
+		(<include refid="columns"/>)
+		values
+		(
+			#{id,jdbcType=NUMERIC}, 
+			#{roleid,jdbcType=NUMERIC}, 
+			#{resid,jdbcType=NUMERIC}
+		)
+    </insert>
+    <update id="update" parameterType="com.platform.permissions.sysroleres.model.SysRoleRes">
+		update SYS_ROLE_RES set
+		id=#{id,jdbcType=NUMERIC},
+		roleid=#{roleid,jdbcType=NUMERIC},
+		resid=#{resid,jdbcType=NUMERIC}
+		WHERE
+		ID=#{id}
+	</update>
+	<select id="getById" parameterType="Long" resultType="com.platform.permissions.sysroleres.model.SysRoleRes">
+        select <include refid="columns"/> from SYS_ROLE_RES where ID=#{id}
+    </select>
+    <delete id="delById" parameterType="Long" >
+        delete from  SYS_ROLE_RES where ID=#{id}
+    </delete>
+    <delete id="delByRoleId" parameterType="Long" >
+        delete from  SYS_ROLE_RES where roleid=#{roleid}
+    </delete>
+    <select id="queryTotal"  resultType="Integer">
+        select count(*) from SYS_ROLE_RES 
+        <include refid="dynamicWhere" /> 
+    </select>
+    <select id="queryAll"  resultMap="SysRoleRes">
+        select <include refid="columns"/> from SYS_ROLE_RES 
+        <include refid="dynamicWhere" /> 
+        <if test="@Ognl@isNotEmpty(sort)">
+			order by ${sort} ${order}
+		</if>
+		<if test="@Ognl@isEmpty(sort)">
+			order by id  desc
+		</if>
+    </select>
+</mapper>

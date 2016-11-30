@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.permissions.sysres.mapper.SysResMapper" >
+    <resultMap id="SysRes" type="com.platform.permissions.sysres.model.SysRes">
+		<id property="id" column="id" jdbcType="NUMERIC"/>
+		<result property="name" column="name" jdbcType="VARCHAR"/>
+		<result property="alias" column="alias" jdbcType="VARCHAR"/>
+		<result property="sn" column="sn" jdbcType="NUMERIC"/>
+		<result property="icon" column="icon" jdbcType="VARCHAR"/>
+		<result property="parentid" column="parentid" jdbcType="NUMERIC"/>
+		<result property="defaulturl" column="defaulturl" jdbcType="VARCHAR"/>
+		<result property="isfolder" column="isfolder" jdbcType="NUMERIC"/>
+		<result property="isdisplayinmenu" column="isdisplayinmenu" jdbcType="NUMERIC"/>
+		<result property="systemid" column="systemid" jdbcType="NUMERIC"/>
+		<result property="path" column="path" jdbcType="VARCHAR"/>
+		<result property="permission" column="permission" jdbcType="VARCHAR"/>
+	</resultMap>
+	<sql id="columns">
+		id,name,alias,sn,icon,parentid,defaulturl,isfolder,isdisplayinmenu,systemid,path,permission
+	</sql>
+	<sql id="dynamicWhere">
+		<where>
+			<if test="@Ognl@isNotEmpty(id)"> AND id  =#{id} </if>
+			<if test="@Ognl@isNotEmpty(name)"> AND instr(name,'${name}')>0  </if>
+			<if test="@Ognl@isNotEmpty(nameEquals)"> AND name  =#{nameEquals}  </if>
+			<if test="@Ognl@isNotEmpty(alias)"> AND instr(alias,'${alias}')>0  </if>
+			<if test="@Ognl@isNotEmpty(aliasEquals)"> AND alias  =#{aliasEquals}  </if>
+			<if test="@Ognl@isNotEmpty(sn)"> AND sn  =#{sn} </if>
+			<if test="@Ognl@isNotEmpty(icon)"> AND instr(icon,'${icon}')>0  </if>
+			<if test="@Ognl@isNotEmpty(iconEquals)"> AND icon  =#{iconEquals}  </if>
+			<if test="@Ognl@isNotEmpty(parentid)"> AND parentid  =#{parentid} </if>
+			<if test="@Ognl@isNotEmpty(parentidQuery)"> AND ( id  =#{parentidQuery} or  parentid  =#{parentidQuery} )</if>
+			<if test="@Ognl@isNotEmpty(defaulturl)"> AND instr(defaulturl,'${defaulturl}')>0  </if>
+			<if test="@Ognl@isNotEmpty(defaulturlEquals)"> AND defaulturl  =#{defaulturlEquals}  </if>
+			<if test="@Ognl@isNotEmpty(isfolder)"> AND isfolder  =#{isfolder} </if>
+			<if test="@Ognl@isNotEmpty(isdisplayinmenu)"> AND isdisplayinmenu  =#{isdisplayinmenu} </if>
+			<if test="@Ognl@isNotEmpty(systemid)"> AND systemid  =#{systemid} </if>
+			<if test="@Ognl@isNotEmpty(path)"> AND instr(path,'${path}')>0  </if>
+			<if test="@Ognl@isNotEmpty(pathEquals)"> AND path  =#{pathEquals}  </if>
+			<if test="@Ognl@isNotEmpty(permission)"> AND instr(permission,'${permission}')>0  </if>
+			<if test="@Ognl@isNotEmpty(permissionEquals)"> AND permission  =#{permissionEquals}  </if>
+			<if test="@Ognl@isNotEmpty(search)"> AND  
+					(	
+							instr(id,'${search}')>0    or 
+							instr(name,'${search}')>0    or 
+							instr(alias,'${search}')>0    or 
+							instr(sn,'${search}')>0    or 
+							instr(icon,'${search}')>0    or 
+							instr(parentid,'${search}')>0    or 
+							instr(defaulturl,'${search}')>0    or 
+							instr(isfolder,'${search}')>0    or 
+							instr(isdisplayinmenu,'${search}')>0    or 
+							instr(systemid,'${search}')>0    or 
+							instr(path,'${search}')>0  or 
+							instr(permission,'${search}')>0
+					)  
+			</if>
+		</where>
+	</sql>
+	<insert id="add" parameterType="com.platform.permissions.sysres.model.SysRes">
+        insert into SYS_RES
+		(<include refid="columns"/>)
+		values
+		(
+			#{id,jdbcType=NUMERIC}, 
+			#{name,jdbcType=VARCHAR}, 
+			#{alias,jdbcType=VARCHAR}, 
+			#{sn,jdbcType=NUMERIC}, 
+			#{icon,jdbcType=VARCHAR}, 
+			#{parentid,jdbcType=NUMERIC}, 
+			#{defaulturl,jdbcType=VARCHAR}, 
+			#{isfolder,jdbcType=NUMERIC}, 
+			#{isdisplayinmenu,jdbcType=NUMERIC}, 
+			#{systemid,jdbcType=NUMERIC}, 
+			#{path,jdbcType=VARCHAR}, 
+			#{permission,jdbcType=VARCHAR}
+		)
+    </insert>
+    <update id="update" parameterType="com.platform.permissions.sysres.model.SysRes">
+		update SYS_RES set
+		id=#{id,jdbcType=NUMERIC},
+		name=#{name,jdbcType=VARCHAR},
+		alias=#{alias,jdbcType=VARCHAR},
+		sn=#{sn,jdbcType=NUMERIC},
+		icon=#{icon,jdbcType=VARCHAR},
+		parentid=#{parentid,jdbcType=NUMERIC},
+		defaulturl=#{defaulturl,jdbcType=VARCHAR},
+		isfolder=#{isfolder,jdbcType=NUMERIC},
+		isdisplayinmenu=#{isdisplayinmenu,jdbcType=NUMERIC},
+		systemid=#{systemid,jdbcType=NUMERIC},
+		path=#{path,jdbcType=VARCHAR},
+		permission=#{permission,jdbcType=VARCHAR}
+		WHERE
+		ID=#{id}
+	</update>
+	<select id="getById" parameterType="Long" resultType="com.platform.permissions.sysres.model.SysRes">
+        select <include refid="columns"/> from SYS_RES where ID=#{id}
+    </select>
+     <delete id="delById" parameterType="Long" >
+        delete from  SYS_RES where ID=#{id}
+    </delete>
+    <select id="queryTotal"  resultType="Integer">
+        select count(*) from SYS_RES 
+        <include refid="dynamicWhere" /> 
+    </select>
+    <select id="queryAll"  resultMap="SysRes">
+        select <include refid="columns"/> from SYS_RES 
+        <include refid="dynamicWhere" /> 
+        <if test="@Ognl@isNotEmpty(sort)">
+			order by ${sort} ${order}
+		</if>
+		<if test="@Ognl@isEmpty(sort)">
+			order by id  desc
+		</if>
+    </select>
+     <select id="queryFirstRes"  resultMap="SysRes">
+        select <include refid="columns"/> from SYS_RES r
+         where r.parentid=0 and r.id in 
+       (select distinct(resid) from sys_role_res where roleid in ${roleids}) order by sn
+    </select>
+     <select id="querySecondRes"  resultMap="SysRes">
+        select <include refid="columns"/> from SYS_RES r
+        where r.parentid!=0 and r.parentid=#{parentid} and r.id in 
+       (select distinct(resid) from sys_role_res where roleid in ${roleids}) order by sn
+    </select>
+    <!-- 根据用户id获取用户拥有的资源信息 -->
+    <select id="queryUsersAllResByUserid"  resultMap="SysRes">
+    select e.id,e.name,e.permission from sys_res e 
+	       where e.id in(
+	             select distinct(d.resid) from sys_role_res d 
+	               where d.roleid in (
+									select distinct(d.id) from sys_role d 
+										where d.id in(
+											select a.roleid from sys_user_role a where a.userid=${userid}
+										)
+	               )
+	       )
+    </select>
+    
+</mapper>

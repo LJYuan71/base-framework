@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+  <!-- properties?, settings?, typeAliases?, typeHandlers?, 
+  objectFactory?, objectWrapperFactory?, plugins?, environments?, 
+  databaseIdProvider?, mappers? -->
+<configuration>
+    <settings>
+        <setting name="cacheEnabled" value="true"/>  
+    </settings>
+    <plugins>
+		<plugin interceptor="com.platform.core.mybatis.plugin.PagePlugin">
+		    <!-- 拦截哪些mapper进行分页 -->
+			<property name="pageSqlId" value=".*queryAll.*"/>
+		</plugin>
+	</plugins>
+</configuration>

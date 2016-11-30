@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.permissions.sysposition.mapper.SysPositionMapper" >
+    <resultMap id="SysPosition" type="com.platform.permissions.sysposition.model.SysPosition">
+		<id property="id" column="id" jdbcType="NUMERIC"/>
+		<result property="posname" column="posname" jdbcType="VARCHAR"/>
+		<result property="posdesc" column="posdesc" jdbcType="VARCHAR"/>
+	</resultMap>
+	<sql id="columns">
+		id,posname,posdesc
+	</sql>
+	<sql id="dynamicWhere">
+		<where>
+			<if test="@Ognl@isNotEmpty(id)"> AND id  =#{id} </if>
+			<if test="@Ognl@isNotEmpty(posname)"> AND instr(posname,'${posname}')>0  </if>
+			<if test="@Ognl@isNotEmpty(posnameEquals)"> AND posname  =#{posnameEquals}  </if>
+			<if test="@Ognl@isNotEmpty(posdesc)"> AND instr(posdesc,'${posdesc}')>0  </if>
+			<if test="@Ognl@isNotEmpty(posdescEquals)"> AND posdesc  =#{posdescEquals}  </if>
+			<if test="@Ognl@isNotEmpty(search)"> AND  
+					(	
+							instr(id,'${search}')>0    or 
+							instr(posname,'${search}')>0    or 
+							instr(posdesc,'${search}')>0    
+					)  
+			</if>
+		</where>
+	</sql>
+	<insert id="add" parameterType="com.platform.permissions.sysposition.model.SysPosition">
+        insert into SYS_POSITION
+		(<include refid="columns"/>)
+		values
+		(
+			#{id,jdbcType=NUMERIC}, 
+			#{posname,jdbcType=VARCHAR}, 
+			#{posdesc,jdbcType=VARCHAR}
+		)
+    </insert>
+    <update id="update" parameterType="com.platform.permissions.sysposition.model.SysPosition">
+		update SYS_POSITION set
+		id=#{id,jdbcType=NUMERIC},
+		posname=#{posname,jdbcType=VARCHAR},
+		posdesc=#{posdesc,jdbcType=VARCHAR}
+		WHERE
+		ID=#{id}
+	</update>
+	<select id="getById" parameterType="Long" resultType="com.platform.permissions.sysposition.model.SysPosition">
+        select <include refid="columns"/> from SYS_POSITION where ID=#{id}
+    </select>
+     <delete id="delById" parameterType="Long" >
+        delete from  SYS_POSITION where ID=#{id}
+    </delete>
+    <select id="queryTotal"  resultType="Integer">
+        select count(*) from SYS_POSITION 
+        <include refid="dynamicWhere" /> 
+    </select>
+    <select id="queryAll"  resultMap="SysPosition">
+        select <include refid="columns"/> from SYS_POSITION 
+        <include refid="dynamicWhere" /> 
+        <if test="@Ognl@isNotEmpty(sort)">
+			order by ${sort} ${order}
+		</if>
+		<if test="@Ognl@isEmpty(sort)">
+			order by id  desc
+		</if>
+    </select>
+</mapper>

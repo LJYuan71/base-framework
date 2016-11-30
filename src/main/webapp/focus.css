@@ -1,0 +1,39 @@
+@charset "utf-8";
+/* CSS Document */
+
+* {margin:0; padding:0;}
+body {font-size:12px; color:#222; font-family:Verdana,Arial,Helvetica,sans-serif; background:#f0f0f0;}
+.clearfix:after {content: "."; display: block; height: 0; clear: both; visibility: hidden;}
+.clearfix {zoom:1;}
+ul,li {list-style:none;}
+img {border:0;}
+.l_logo{float:left;widt:100px;
+line-height:70px;
+font-size:30px;}
+.wrapper {width:400px; margin:0 auto;}
+
+h1 {height:50px; line-height:50px; font-size:22px; font-weight:normal; font-family:"Microsoft YaHei",SimHei;}
+
+.shuoming {margin-top:20px; border:1px solid #ccc; padding-bottom:10px;}
+.shuoming dt {height:30px; line-height:30px; font-weight:bold; text-indent:10px;}
+.shuoming dd {line-height:20px; padding:5px 20px;}
+
+/* qqshop focus */
+#focus {width:400px; height:350px; overflow:hidden; position:relative;}
+#focus ul {height:400px; position:absolute;}
+#focus ul li {float:left; width:400px; height:350px; overflow:hidden; position:relative; background:#000;}
+#focus ul li div {position:absolute; overflow:hidden;}
+#focus .btnBg {position:absolute; width:400px; height:20px; left:0; bottom:0; background:#000;}
+#focus .btn { bottom: 0;
+    height: 10px;
+   width:100%;
+   text-align:center;
+    padding: 5px 10px;
+    position: absolute;}
+#focus .btn span {display:inline-block; _display:inline; _zoom:1; width:25px; height:10px; _font-size:0; margin-left:5px; cursor:pointer; background:#034e99;}
+#focus .btn span.on {background:#fff;}
+#focus .preNext {width:45px; height:100px; position:absolute; top:150px; background:url(img/sprite.png) no-repeat 0 0; cursor:pointer;}
+#focus .pre {left:0;}
+#focus .next {right:0; background-position:right top;}
+
+

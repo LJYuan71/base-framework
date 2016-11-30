@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.permissions.sysuserpos.mapper.SysUserPosMapper" >
+    <resultMap id="SysUserPos" type="com.platform.permissions.sysuserpos.model.SysUserPos">
+		<id property="id" column="id" jdbcType="NUMERIC"/>
+		<result property="posid" column="posid" jdbcType="NUMERIC"/>
+		<result property="userid" column="userid" jdbcType="NUMERIC"/>
+	</resultMap>
+	<sql id="columns">
+		id,posid,userid
+	</sql>
+	<sql id="dynamicWhere">
+		<where>
+			<if test="@Ognl@isNotEmpty(id)"> AND id  =#{id} </if>
+			<if test="@Ognl@isNotEmpty(posid)"> AND posid  =#{posid} </if>
+			<if test="@Ognl@isNotEmpty(userid)"> AND userid  =#{userid} </if>
+			<if test="@Ognl@isNotEmpty(search)"> AND  
+					(	
+							instr(id,'${search}')>0    or 
+							instr(posid,'${search}')>0    or 
+							instr(userid,'${search}')>0  
+					)  
+			</if>
+		</where>
+	</sql>
+	<insert id="add" parameterType="com.platform.permissions.sysuserpos.model.SysUserPos">
+        insert into SYS_USER_POS
+		(<include refid="columns"/>)
+		values
+		(
+			#{id,jdbcType=NUMERIC}, 
+			#{posid,jdbcType=NUMERIC}, 
+			#{userid,jdbcType=NUMERIC}
+		)
+    </insert>
+    <update id="update" parameterType="com.platform.permissions.sysuserpos.model.SysUserPos">
+		update SYS_USER_POS set
+		id=#{id,jdbcType=NUMERIC},
+		posid=#{posid,jdbcType=NUMERIC},
+		userid=#{userid,jdbcType=NUMERIC}
+		WHERE
+		ID=#{id}
+	</update>
+	<select id="getById" parameterType="Long" resultType="com.platform.permissions.sysuserpos.model.SysUserPos">
+        select <include refid="columns"/> from SYS_USER_POS where ID=#{id}
+    </select>
+     <delete id="delById" parameterType="Long" >
+        delete from  SYS_USER_POS where ID=#{id}
+    </delete>
+    <select id="queryTotal"  resultType="Integer">
+        select count(*) from SYS_USER_POS 
+        <include refid="dynamicWhere" /> 
+    </select>
+    <select id="queryAll"  resultMap="SysUserPos">
+        select <include refid="columns"/> from SYS_USER_POS 
+        <include refid="dynamicWhere" /> 
+        <if test="@Ognl@isNotEmpty(sort)">
+			order by ${sort} ${order}
+		</if>
+		<if test="@Ognl@isEmpty(sort)">
+			order by id  desc
+		</if>
+    </select>
+</mapper>

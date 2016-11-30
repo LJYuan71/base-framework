@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.permissions.syshostinfo.mapper.SysHostInfoMapper" >
+    <resultMap id="sysHostInfo" type="com.platform.permissions.syshostinfo.model.SysHostInfo">
+		<id property="id" column="id" jdbcType="NUMERIC"/>
+		<result property="name" column="name" jdbcType="VARCHAR"/>
+		<result property="type" column="type" jdbcType="VARCHAR"/>
+		<result property="cpu" column="cpu" jdbcType="NUMERIC"/>
+		<result property="memory" column="memory" jdbcType="NUMERIC"/>
+		<result property="harddisk" column="harddisk" jdbcType="NUMERIC"/>
+		<result property="maxusers" column="maxusers" jdbcType="NUMERIC"/>
+		<result property="minusers" column="minusers" jdbcType="NUMERIC"/>
+		<result property="describes" column="describes" jdbcType="VARCHAR"/>
+		<result property="createtime" column="createtime" jdbcType="TIMESTAMP"/>
+	</resultMap>
+	<sql id="columns">
+		id,name,type,cpu,memory,harddisk,maxusers,minusers,describes,createtime
+	</sql>
+	<sql id="dynamicWhere">
+		<where>
+			<if test="@Ognl@isNotEmpty(id)"> AND id  =#{id} </if>
+			<if test="@Ognl@isNotEmpty(name)"> AND instr(name,'${name}')>0  </if>
+			<if test="@Ognl@isNotEmpty(nameEquals)"> AND name  =#{nameEquals}  </if>
+			<if test="@Ognl@isNotEmpty(type)"> AND instr(type,'${type}')>0  </if>
+			<if test="@Ognl@isNotEmpty(typeEquals)"> AND type  =#{typeEquals}  </if>
+			<if test="@Ognl@isNotEmpty(cpu)"> AND cpu  =#{cpu} </if>
+			<if test="@Ognl@isNotEmpty(memory)"> AND memory  =#{memory} </if>
+			<if test="@Ognl@isNotEmpty(harddisk)"> AND harddisk  =#{harddisk} </if>
+			<if test="@Ognl@isNotEmpty(maxusers)"> AND maxusers  =#{maxusers} </if>
+			<if test="@Ognl@isNotEmpty(minusers)"> AND minusers  =#{minusers} </if>
+			<if test="@Ognl@isNotEmpty(describes)"> AND instr(describes,'${describes}')>0  </if>
+			<if test="@Ognl@isNotEmpty(describesEquals)"> AND describes  =#{describesEquals}  </if>
+			<if test="@Ognl@isNotEmpty(createtime)"> AND createtime  =#{createtime} </if>
+			<if test="@Ognl@isNotEmpty(begincreatetime)"> AND createtime  >=#{begincreatetime,jdbcType=DATE} </if>
+			<if test="@Ognl@isNotEmpty(endcreatetime)"> AND createtime <![CDATA[ <=#{endcreatetime,jdbcType=DATE}]]> </if>
+			<if test="@Ognl@isNotEmpty(search)"> AND  
+					(	
+							instr(id,'${search}')>0    or 
+							instr(name,'${search}')>0    or 
+							instr(type,'${search}')>0    or 
+							instr(cpu,'${search}')>0    or 
+							instr(memory,'${search}')>0    or 
+							instr(harddisk,'${search}')>0    or 
+							instr(maxusers,'${search}')>0    or 
+							instr(minusers,'${search}')>0    or 
+							instr(describes,'${search}')>0    or 
+							instr(createtime,'${search}')>0  
+					)  
+			</if>
+		</where>
+	</sql>
+	<insert id="add" parameterType="com.platform.permissions.syshostinfo.model.SysHostInfo">
+        insert into SYS_HOST_INFO
+		(<include refid="columns"/>)
+		values
+		(
+			#{id,jdbcType=NUMERIC}, 
+			#{name,jdbcType=VARCHAR}, 
+			#{type,jdbcType=VARCHAR}, 
+			#{cpu,jdbcType=NUMERIC}, 
+			#{memory,jdbcType=NUMERIC}, 
+			#{harddisk,jdbcType=NUMERIC}, 
+			#{maxusers,jdbcType=NUMERIC}, 
+			#{minusers,jdbcType=NUMERIC}, 
+			#{describes,jdbcType=VARCHAR}, 
+			#{createtime,jdbcType=DATE}
+		)
+    </insert>
+    <update id="update" parameterType="com.platform.permissions.syshostinfo.model.SysHostInfo">
+		update SYS_HOST_INFO set
+		id=#{id,jdbcType=NUMERIC},
+		name=#{name,jdbcType=VARCHAR},
+		type=#{type,jdbcType=VARCHAR},
+		cpu=#{cpu,jdbcType=NUMERIC},
+		memory=#{memory,jdbcType=NUMERIC},
+		harddisk=#{harddisk,jdbcType=NUMERIC},
+		maxusers=#{maxusers,jdbcType=NUMERIC},
+		minusers=#{minusers,jdbcType=NUMERIC},
+		describes=#{describes,jdbcType=VARCHAR},
+		createtime=#{createtime,jdbcType=DATE}
+		WHERE
+		id=#{id}
+	</update>
+	<select id="getById" parameterType="Long" resultType="com.platform.permissions.syshostinfo.model.SysHostInfo">
+        select <include refid="columns"/> from SYS_HOST_INFO where id=#{id}
+    </select>
+     <delete id="delById" parameterType="Long" >
+        delete from  SYS_HOST_INFO where id=#{id}
+    </delete>
+    <select id="queryTotal"  resultType="Integer">
+        select count(*) from SYS_HOST_INFO 
+        <include refid="dynamicWhere" /> 
+    </select>
+    <select id="queryAll"  resultMap="sysHostInfo">
+        select <include refid="columns"/> from SYS_HOST_INFO 
+        <include refid="dynamicWhere" /> 
+        <if test="@Ognl@isNotEmpty(sort)">
+			order by ${sort} ${order}
+		</if>
+		<if test="@Ognl@isEmpty(sort)">
+			order by cpu 
+		</if>
+    </select>
+</mapper>

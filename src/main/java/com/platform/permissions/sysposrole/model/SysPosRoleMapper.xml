@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.permissions.sysposrole.mapper.SysPosRoleMapper" >
+    <resultMap id="SysPosRole" type="com.platform.permissions.sysposrole.model.SysPosRole">
+		<id property="id" column="id" jdbcType="NUMERIC"/>
+		<result property="posid" column="posid" jdbcType="NUMERIC"/>
+		<result property="roleid" column="roleid" jdbcType="NUMERIC"/>
+	</resultMap>
+	<sql id="columns">
+		id,posid,roleid
+	</sql>
+	<sql id="dynamicWhere">
+		<where>
+			<if test="@Ognl@isNotEmpty(id)"> AND id  =#{id} </if>
+			<if test="@Ognl@isNotEmpty(posid)"> AND posid  =#{posid} </if>
+			<if test="@Ognl@isNotEmpty(roleid)"> AND roleid  =#{roleid} </if>
+			<if test="@Ognl@isNotEmpty(search)"> AND  
+					(	
+							instr(id,'${search}')>0    or 
+							instr(posid,'${search}')>0    or 
+							instr(roleid,'${search}')>0  
+					)  
+			</if>
+		</where>
+	</sql>
+	<insert id="add" parameterType="com.platform.permissions.sysposrole.model.SysPosRole">
+        insert into SYS_POS_ROLE
+		(<include refid="columns"/>)
+		values
+		(
+			#{id,jdbcType=NUMERIC}, 
+			#{posid,jdbcType=NUMERIC}, 
+			#{roleid,jdbcType=NUMERIC}
+		)
+    </insert>
+    <update id="update" parameterType="com.platform.permissions.sysposrole.model.SysPosRole">
+		update SYS_POS_ROLE set
+		id=#{id,jdbcType=NUMERIC},
+		posid=#{posid,jdbcType=NUMERIC},
+		roleid=#{roleid,jdbcType=NUMERIC}
+		WHERE
+		ID=#{id}
+	</update>
+	<select id="getById" parameterType="Long" resultType="com.platform.permissions.sysposrole.model.SysPosRole">
+        select <include refid="columns"/> from SYS_POS_ROLE where ID=#{id}
+    </select>
+     <delete id="delById" parameterType="Long" >
+        delete from  SYS_POS_ROLE where ID=#{id}
+    </delete>
+    <select id="queryTotal"  resultType="Integer">
+        select count(*) from SYS_POS_ROLE 
+        <include refid="dynamicWhere" /> 
+    </select>
+    <select id="queryAll"  resultMap="SysPosRole">
+        select <include refid="columns"/> from SYS_POS_ROLE 
+        <include refid="dynamicWhere" /> 
+        <if test="@Ognl@isNotEmpty(sort)">
+			order by ${sort} ${order}
+		</if>
+		<if test="@Ognl@isEmpty(sort)">
+			order by id  desc
+		</if>
+    </select>
+</mapper>

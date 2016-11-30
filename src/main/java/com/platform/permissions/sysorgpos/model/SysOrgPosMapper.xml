@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.permissions.sysorgpos.mapper.SysOrgPosMapper" >
+    <resultMap id="SysOrgPos" type="com.platform.permissions.sysorgpos.model.SysOrgPos">
+		<id property="id" column="id" jdbcType="NUMERIC"/>
+		<result property="orgid" column="orgid" jdbcType="NUMERIC"/>
+		<result property="posid" column="posid" jdbcType="NUMERIC"/>
+	</resultMap>
+	<sql id="columns">
+		id,orgid,posid
+	</sql>
+	<sql id="dynamicWhere">
+		<where>
+			<if test="@Ognl@isNotEmpty(id)"> AND id  =#{id} </if>
+			<if test="@Ognl@isNotEmpty(orgid)"> AND orgid  =#{orgid} </if>
+			<if test="@Ognl@isNotEmpty(posid)"> AND posid  =#{posid} </if>
+			<if test="@Ognl@isNotEmpty(search)"> AND  
+					(	
+							instr(id,'${search}')>0    or 
+							instr(orgid,'${search}')>0    or 
+							instr(posid,'${search}')>0  
+					)  
+			</if>
+		</where>
+	</sql>
+	<insert id="add" parameterType="com.platform.permissions.sysorgpos.model.SysOrgPos">
+        insert into SYS_ORG_POS
+		(<include refid="columns"/>)
+		values
+		(
+			#{id,jdbcType=NUMERIC}, 
+			#{orgid,jdbcType=NUMERIC}, 
+			#{posid,jdbcType=NUMERIC}
+		)
+    </insert>
+    <update id="update" parameterType="com.platform.permissions.sysorgpos.model.SysOrgPos">
+		update SYS_ORG_POS set
+		id=#{id,jdbcType=NUMERIC},
+		orgid=#{orgid,jdbcType=NUMERIC},
+		posid=#{posid,jdbcType=NUMERIC}
+		WHERE
+		ID=#{id}
+	</update>
+	<select id="getById" parameterType="Long" resultType="com.platform.permissions.sysorgpos.model.SysOrgPos">
+        select <include refid="columns"/> from SYS_ORG_POS where ID=#{id}
+    </select>
+    <delete id="delById" parameterType="Long" >
+        delete from  SYS_ORG_POS where ID=#{id}
+    </delete>
+     <delete id="delByPosId" parameterType="Long" >
+        delete from  SYS_ORG_POS where posid=#{posid}
+    </delete>
+     <delete id="delByPosIdAndOrgId" parameterType="Long" >
+        delete from  SYS_ORG_POS where posid=#{posid} and orgid=#{orgid}
+    </delete>
+    <select id="queryTotal"  resultType="Integer">
+        select count(*) from SYS_ORG_POS 
+        <include refid="dynamicWhere" /> 
+    </select>
+    <select id="queryAll"  resultMap="SysOrgPos">
+        select <include refid="columns"/> from SYS_ORG_POS 
+        <include refid="dynamicWhere" /> 
+        <if test="@Ognl@isNotEmpty(sort)">
+			order by ${sort} ${order}
+		</if>
+		<if test="@Ognl@isEmpty(sort)">
+			order by id  desc
+		</if>
+    </select>
+</mapper>

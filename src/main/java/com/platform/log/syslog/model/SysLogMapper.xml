@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.log.syslog.mapper.SysLogMapper" >
+    <resultMap id="SysLog" type="com.platform.log.syslog.model.SysLog">
+		<id property="id" column="id" jdbcType="NUMERIC"/>
+		<result property="userid" column="userid" jdbcType="NUMERIC"/>
+		<result property="username" column="username" jdbcType="VARCHAR"/>
+		<result property="createtime" column="createtime" jdbcType="DATE"/>
+		<result property="modelname" column="modelname" jdbcType="VARCHAR"/>
+		<result property="description" column="description" jdbcType="VARCHAR"/>
+		<result property="state" column="state" jdbcType="NUMERIC"/>
+	</resultMap>
+	<sql id="columns">
+		id,userid,username,createtime,modelname,description,state
+	</sql>
+	<sql id="dynamicWhere">
+		<where>
+			<if test="@Ognl@isNotEmpty(id)"> AND id  =#{id} </if>
+			<if test="@Ognl@isNotEmpty(userid)"> AND userid  =#{userid} </if>
+			<if test="@Ognl@isNotEmpty(username)"> AND instr(username,'${username}')>0  </if>
+			<if test="@Ognl@isNotEmpty(usernameEquals)"> AND username  =#{usernameEquals}  </if>
+			<if test="@Ognl@isNotEmpty(createtime)"> AND createtime  =#{createtime} </if>
+			<if test="@Ognl@isNotEmpty(begincreatetime)"> AND createtime  >=#{begincreatetime,jdbcType=DATE} </if>
+			<if test="@Ognl@isNotEmpty(endcreatetime)"> AND createtime <![CDATA[ <=#{endcreatetime,jdbcType=DATE}]]> </if>
+			<if test="@Ognl@isNotEmpty(modelname)"> AND instr(modelname,'${modelname}')>0  </if>
+			<if test="@Ognl@isNotEmpty(modelnameEquals)"> AND modelname  =#{modelnameEquals}  </if>
+			<if test="@Ognl@isNotEmpty(description)"> AND instr(description,'${description}')>0  </if>
+			<if test="@Ognl@isNotEmpty(descriptionEquals)"> AND description  =#{descriptionEquals}  </if>
+			<if test="@Ognl@isNotEmpty(state)"> AND state  =#{state} </if>
+			<if test="@Ognl@isNotEmpty(search)"> AND  
+					(	
+							instr(id,'${search}')>0    or 
+							instr(userid,'${search}')>0    or 
+							instr(username,'${search}')>0    or 
+							instr(createtime,'${search}')>0    or 
+							instr(modelname,'${search}')>0    or 
+							instr(description,'${search}')>0    or 
+							instr(state,'${search}')>0  
+					)  
+			</if>
+		</where>
+	</sql>
+	<insert id="add" parameterType="com.platform.log.syslog.model.SysLog">
+        insert into SYS_LOG
+		(<include refid="columns"/>)
+		values
+		(
+			#{id,jdbcType=NUMERIC}, 
+			#{userid,jdbcType=NUMERIC}, 
+			#{username,jdbcType=VARCHAR}, 
+			#{createtime,jdbcType=DATE}, 
+			#{modelname,jdbcType=VARCHAR}, 
+			#{description,jdbcType=VARCHAR}, 
+			#{state,jdbcType=NUMERIC}
+		)
+    </insert>
+    <update id="update" parameterType="com.platform.log.syslog.model.SysLog">
+		update SYS_LOG set
+		id=#{id,jdbcType=NUMERIC},
+		userid=#{userid,jdbcType=NUMERIC},
+		username=#{username,jdbcType=VARCHAR},
+		createtime=#{createtime,jdbcType=DATE},
+		modelname=#{modelname,jdbcType=VARCHAR},
+		description=#{description,jdbcType=VARCHAR},
+		state=#{state,jdbcType=NUMERIC}
+		WHERE
+		ID=#{id}
+	</update>
+	<select id="getById" parameterType="Long" resultType="com.platform.log.syslog.model.SysLog">
+        select <include refid="columns"/> from SYS_LOG where ID=#{id}
+    </select>
+     <delete id="delById" parameterType="Long" >
+        delete from  SYS_LOG where ID=#{id}
+    </delete>
+    <select id="queryTotal"  resultType="Integer">
+        select count(*) from SYS_LOG 
+        <include refid="dynamicWhere" /> 
+    </select>
+    <select id="queryAll"  resultMap="SysLog">
+        select <include refid="columns"/> from SYS_LOG 
+        <include refid="dynamicWhere" /> 
+        <if test="@Ognl@isNotEmpty(sort)">
+			order by ${sort} ${order}
+		</if>
+		<if test="@Ognl@isEmpty(sort)">
+			order by id  desc
+		</if>
+    </select>
+</mapper>

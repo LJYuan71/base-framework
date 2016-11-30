@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.platform.permissions.sysuser.mapper.SysUserMapper" >
+    <resultMap id="SysUser" type="com.platform.permissions.sysuser.model.SysUser">
+		<id property="id" column="id" jdbcType="NUMERIC"/>
+		<result property="fullname" column="fullname" jdbcType="VARCHAR"/>
+		<result property="account" column="account" jdbcType="VARCHAR"/>
+		<result property="password" column="password" jdbcType="VARCHAR"/>
+		<result property="isexpired" column="isexpired" jdbcType="NUMERIC"/>
+		<result property="islock" column="islock" jdbcType="NUMERIC"/>
+		<result property="createdate" column="createdate" jdbcType="TIMESTAMP"/>
+		<result property="status" column="status" jdbcType="NUMERIC"/>
+		<result property="email" column="email" jdbcType="VARCHAR"/>
+		<result property="mobile" column="mobile" jdbcType="VARCHAR"/>
+		<result property="phone" column="phone" jdbcType="VARCHAR"/>
+		<result property="sex" column="sex" jdbcType="VARCHAR"/>
+		<result property="picture" column="picture" jdbcType="VARCHAR"/>
+		<result property="fromtype" column="fromtype" jdbcType="VARCHAR"/>
+		<result property="idcard" column="idcard" jdbcType="VARCHAR"/>
+		<result property="company" column="company" jdbcType="VARCHAR"/>
+	</resultMap>
+	<sql id="columns">
+		id,fullname,account,password,isexpired,islock,createdate,status,email,mobile,phone,sex,picture,fromtype,idcard,company
+	</sql>
+	<sql id="dynamicWhere">
+		<where>
+			<if test="@Ognl@isNotEmpty(id)"> AND id  =#{id} </if>
+			<if test="@Ognl@isNotEmpty(notid)"> AND id  !=#{notid} </if>
+			<if test="@Ognl@isNotEmpty(fullname)"> AND instr(fullname,'${fullname}')>0  </if>
+			<if test="@Ognl@isNotEmpty(fullnameEquals)"> AND fullname  =#{fullnameEquals}  </if>
+			<if test="@Ognl@isNotEmpty(account)"> AND instr(account,'${account}')>0  </if>
+			<if test="@Ognl@isNotEmpty(accountEquals)"> AND account  =#{accountEquals}  </if>
+			<if test="@Ognl@isNotEmpty(passwordEquals)"> AND password  =#{passwordEquals}  </if>
+			<if test="@Ognl@isNotEmpty(isexpired)"> AND isexpired  =#{isexpired} </if>
+			<if test="@Ognl@isNotEmpty(islock)"> AND islock  =#{islock} </if>
+			<if test="@Ognl@isNotEmpty(createdate)"> AND createdate  =#{createdate} </if>
+			<if test="@Ognl@isNotEmpty(begincreatedate)"> AND createdate  >=#{begincreatedate,jdbcType=DATE} </if>
+			<if test="@Ognl@isNotEmpty(endcreatedate)"> AND createdate <![CDATA[ <=#{endcreatedate,jdbcType=DATE}]]> </if>
+			<if test="@Ognl@isNotEmpty(status)"> AND status  =#{status} </if>
+			<if test="@Ognl@isNotEmpty(notstatus)"> AND status  !=#{notstatus} </if>
+			<if test="@Ognl@isNotEmpty(email)"> AND instr(email,'${email}')>0  </if>
+			<if test="@Ognl@isNotEmpty(emailEquals)"> AND email  =#{emailEquals}  </if>
+			<if test="@Ognl@isNotEmpty(mobile)"> AND instr(mobile,'${mobile}')>0  </if>
+			<if test="@Ognl@isNotEmpty(mobileEquals)"> AND mobile  =#{mobileEquals}  </if>
+			<if test="@Ognl@isNotEmpty(phone)"> AND instr(phone,'${phone}')>0  </if>
+			<if test="@Ognl@isNotEmpty(phoneEquals)"> AND phone  =#{phoneEquals}  </if>
+			<if test="@Ognl@isNotEmpty(sex)"> AND instr(sex,'${sex}')>0  </if>
+			<if test="@Ognl@isNotEmpty(sexEquals)"> AND sex  =#{sexEquals}  </if>
+			<if test="@Ognl@isNotEmpty(picture)"> AND instr(picture,'${picture}')>0  </if>
+			<if test="@Ognl@isNotEmpty(pictureEquals)"> AND picture  =#{pictureEquals}  </if>
+			<if test="@Ognl@isNotEmpty(fromtype)"> AND instr(fromtype,'${fromtype}')>0  </if>
+			<if test="@Ognl@isNotEmpty(fromtypeEquals)"> AND fromtype  =#{fromtypeEquals}  </if>
+			<if test="@Ognl@isNotEmpty(idcard)"> AND instr(idcard,'${idcard}')>0  </if>
+			<if test="@Ognl@isNotEmpty(idcardEquals)"> AND idcard  =#{idcardEquals}  </if>
+			<if test="@Ognl@isNotEmpty(company)"> AND instr(company,'${company}')>0  </if>
+			<if test="@Ognl@isNotEmpty(search)"> AND  
+					(	
+							instr(fullname,'${search}')>0   or 
+							instr(account,'${search}')>0  or
+							instr(company,'${company}')>0  or
+							instr(mobile,'${mobile}')>0    or
+							instr(email,'${email}')>0	   or
+							instr(sex,'${sex}')>0 
+					)  
+			</if>
+		</where>
+	</sql>
+	<insert id="add" parameterType="com.platform.permissions.sysuser.model.SysUser">
+        insert into SYS_USER
+		(<include refid="columns"/>)
+		values
+		(
+			#{id,jdbcType=NUMERIC}, 
+			#{fullname,jdbcType=VARCHAR}, 
+			#{account,jdbcType=VARCHAR}, 
+			#{password,jdbcType=VARCHAR}, 
+			#{isexpired,jdbcType=NUMERIC}, 
+			#{islock,jdbcType=NUMERIC}, 
+			#{createdate,jdbcType=DATE}, 
+			#{status,jdbcType=NUMERIC}, 
+			#{email,jdbcType=VARCHAR}, 
+			#{mobile,jdbcType=VARCHAR}, 
+			#{phone,jdbcType=VARCHAR}, 
+			#{sex,jdbcType=VARCHAR}, 
+			#{picture,jdbcType=VARCHAR}, 
+			#{fromtype,jdbcType=VARCHAR},
+			#{idcard,jdbcType=VARCHAR},
+			#{company,jdbcType=VARCHAR}
+		)
+    </insert>
+    <update id="update" parameterType="com.platform.permissions.sysuser.model.SysUser">
+		update SYS_USER set
+		id=#{id,jdbcType=NUMERIC},
+		fullname=#{fullname,jdbcType=VARCHAR},
+		account=#{account,jdbcType=VARCHAR},
+		password=#{password,jdbcType=VARCHAR},
+		isexpired=#{isexpired,jdbcType=NUMERIC},
+		islock=#{islock,jdbcType=NUMERIC},
+		createdate=#{createdate,jdbcType=DATE},
+		status=#{status,jdbcType=NUMERIC},
+		email=#{email,jdbcType=VARCHAR},
+		mobile=#{mobile,jdbcType=VARCHAR},
+		phone=#{phone,jdbcType=VARCHAR},
+		sex=#{sex,jdbcType=VARCHAR},
+		picture=#{picture,jdbcType=VARCHAR},
+		fromtype=#{fromtype,jdbcType=VARCHAR},
+		idcard=#{idcard,jdbcType=VARCHAR},
+		company=#{company,jdbcType=VARCHAR}
+		WHERE
+		ID=#{id}
+	</update>
+	<select id="getById" parameterType="Long" resultType="com.platform.permissions.sysuser.model.SysUser">
+        select <include refid="columns"/> from SYS_USER where ID=#{id}
+    </select>
+     <delete id="delById" parameterType="Long" >
+        delete from  SYS_USER where ID=#{id}
+    </delete>
+    <select id="queryTotal"  resultType="Integer">
+        select count(*) from SYS_USER 
+        <include refid="dynamicWhere" /> 
+    </select>
+    <select id="queryAll"  resultMap="SysUser">
+        select <include refid="columns"/> from SYS_USER 
+        <include refid="dynamicWhere" /> 
+        <if test="@Ognl@isNotEmpty(sort)">
+			order by ${sort} ${order}
+		</if>
+		<if test="@Ognl@isEmpty(sort)">
+			order by id  desc
+		</if>
+    </select>
+</mapper>

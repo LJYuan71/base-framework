@@ -1,0 +1,250 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>用户登录</title>
+<link href="index.css" rel="stylesheet" type="text/css">
+<link href="focus.css" rel="stylesheet" type="text/css">
+
+ <!--图片切换js begin-->
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="common/login/js/jquery.tips.js"></script>
+<script type="text/javascript" src="common/login/js/jquery.cookie.js"></script>
+<script type="text/javascript">  
+	// 用于并发登录人数控制
+    function kickout(){  
+    	//如果当前窗口不是最上层窗口（比如是在Iframe中），那么就把自己变为最上层窗口。
+        //这可以防止别的网站把你自己的网站放在他的Iframe中，从而损害你的利益
+        var href;
+        if (window != top) {
+        	href=top.location.href = location.href;
+    	}
+       if(href.indexOf("kickout")>0){  //地址栏中含有kickout即为多人同时登录
+           alert("您的账号在另一台设备上登录,若不是您本人操作,请立即修改密码!");  
+       }   
+    }  
+    window.onload=kickout(); 
+    
+</script>
+<script type="text/javascript">
+$(function() {
+	var sWidth = $("#focus").width(); //获取焦点图的宽度（显示面积）
+	var len = $("#focus ul li").length; //获取焦点图个数
+	var index = 0;
+	var picTimer;
+	
+	//以下代码添加数字按钮和按钮后的半透明条，还有上一页、下一页两个按钮
+	var btn = "<div class='btn'>";
+	for(var i=0; i < len; i++) {
+		btn += "<span></span>";
+	}
+	btn += "</div><div class='preNext pre'></div><div class='preNext next'></div>";
+	$("#focus").append(btn);
+	$("#focus .btnBg").css("opacity",0.5);
+
+	//为小按钮添加鼠标滑入事件，以显示相应的内容
+	$("#focus .btn span").css("opacity",0.4).mouseenter(function() {
+		index = $("#focus .btn span").index(this);
+		showPics(index);
+	}).eq(0).trigger("mouseenter");
+
+	//上一页、下一页按钮透明度处理
+	$("#focus .preNext").css("opacity",0.2).hover(function() {
+		$(this).stop(true,false).animate({"opacity":"0.5"},300);
+	},function() {
+		$(this).stop(true,false).animate({"opacity":"0.2"},300);
+	});
+	//上一页按钮
+	$("#focus .pre").click(function() {
+		index -= 1;
+		if(index == -1) {index = len - 1;}
+		showPics(index);
+	});
+
+	//下一页按钮
+	$("#focus .next").click(function() {
+		index += 1;
+		if(index == len) {index = 0;}
+		showPics(index);
+	});
+
+	//本例为左右滚动，即所有li元素都是在同一排向左浮动，所以这里需要计算出外围ul元素的宽度
+	$("#focus ul").css("width",sWidth * (len));
+	
+	//鼠标滑上焦点图时停止自动播放，滑出时开始自动播放
+	$("#focus").hover(function() {
+		clearInterval(picTimer);
+	},function() {
+		picTimer = setInterval(function() {
+			showPics(index);
+			index++;
+			if(index == len) {index = 0;}
+		},4000); //此4000代表自动播放的间隔，单位：毫秒
+	}).trigger("mouseleave");
+	
+	//显示图片函数，根据接收的index值显示相应的内容
+	function showPics(index) { //普通切换
+		var nowLeft = -index*sWidth; //根据index值计算ul元素的left值
+		$("#focus ul").stop(true,false).animate({"left":nowLeft},300); //通过animate()调整ul元素滚动到计算出的position
+		//$("#focus .btn span").removeClass("on").eq(index).addClass("on"); //为当前的按钮切换到选中的效果
+		$("#focus .btn span").stop(true,false).animate({"opacity":"0.4"},300).eq(index).stop(true,false).animate({"opacity":"1"},300); //为当前的按钮切换到选中的效果
+	}
+});
+	
+	//客户端校验
+	function check() {
+		if (!$("#username").val()) {
+			$("#username").tips({
+				side : 1,
+				msg : '用户名不能为空!',
+				bg : '#FF5080',
+				time : 3
+			});
+			$("#username").focus();
+			return false;
+		} else {
+			$("#username").val(jQuery.trim($('#username').val()));
+		}
+		if (!$("#password").val()) {
+			$("#password").tips({
+				side : 1,
+				msg : '密码不能为空!',
+				bg : '#FF5080',
+				time : 3
+			});
+			$("#password").focus();
+			return false;
+		}
+		$(".label_main").tips({
+			side : 1,
+			msg : '正在登录 , 请稍后 ...',
+			bg : '#68B500',
+			time : 4
+		});
+		return true;
+	}
+	//获取项目跟路径
+	function getRootPath(){      
+	    var curWwwPath=window.document.location.href;      
+	    var pathName=window.document.location.pathname;      
+	    var pos=curWwwPath.indexOf(pathName);      
+	    var localhostPaht=curWwwPath.substring(0,pos);      
+	    var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);      
+	    return (localhostPaht+projectName);  
+	}  
+	//服务器校验
+	function severCheck(){
+		if(check()){
+			var username = $("#username").val();
+			var password = $("#password").val();
+			$.ajax({
+				type: "POST",
+				url: getRootPath()+'/login.do',
+		    	data: {
+		    		"username" : username,
+					"password" : password
+				},
+				dataType:'json',
+				cache: false,
+				success: function(data){
+					var ret=eval("("+data+")");
+					if("登陆成功" == ret.message_login){
+						saveCookie();
+						window.location.href = getRootPath()+"/index.do";
+					}else{
+						$("#username").tips({
+							side : 1,
+							msg : ret.message_login,
+							bg : '#FF5080',
+							time : 2
+						});
+						$("#username").focus();
+					}
+				}
+			});
+		}
+	};
+	//保存cookie，有效期7天
+	function saveCookie() {
+		$.cookie('username', $("#username").val(), {
+			expires : 7
+		});
+	}
+	//默认记住用户
+	jQuery(function() {
+		var username = localStorage.account||($.cookie('username'));
+		if (typeof(username) != "undefined") {
+			$("#username").val(username);
+			$("#password").focus();
+			localStorage.removeItem("account");//清除本地存储
+		}
+	});
+	//确定按钮登录
+	$(document).keyup(function(event) {
+		if (event.keyCode == 13) {
+			$("#to_login").trigger("click");
+		}
+	});
+
+</script>
+ <!--图片切换js end-->
+</head>
+<body>
+<div class="member b-line">
+<div class="row">
+<div class="l_logo">logo</div>
+<div class="row_rep"><a href="index.html">返回首页</a></div>
+</div>	
+</div>
+<!--登录 begin -->
+<div class="member_cen">
+	<div class="cbg">
+    	<div class="cbg_l">
+        <!--图片切换　begin -->
+        <div class="wrapper">
+	<div id="focus">
+		<ul>
+			<li><a href="#" target="_blank"><img src="image/login_pic01.jpg" width="400" height="350"></a></li>
+			<li><a href="#" target="_blank"><img src="image/login_pic02.jpg" width="400" height="350"></a></li>
+			<li><a href="#" target="_blank"><img src="image/login_pic03.jpg" width="400" height="350"></a></li>
+		</ul>
+	</div>
+</div>
+  <!--图片切换　end  -->       
+        </div>
+        <div class="cbg_r wid248">
+        	<div class="tname">会员登录</div>
+       <div class="label_main"> 
+       <!-- <div class="fm-error">账号密码不正确！</div>   -->
+         <dl>
+            	<dt >
+                 <label for="fm-login-id" >账号:</label>
+                	<span  class="label-extra"><a href="#">忘记账号？</a></span>
+                </dt>
+                <dd>
+                	<input  placeholder="用户账号" tabindex="1" id="username" name="username" class="fm-text" >
+                    <dt >
+                 <label for="fm-login-id" >密码:</label>
+                	<span  class="label-extra"><a href="#">忘记密码？</a></span>
+                </dt>
+                <dd>
+                	<input  placeholder="登录密码" type="password" tabindex="1" id="password" name="password" class="fm-text" >
+                </dd>
+                </dd>
+            </dl>
+            <div class="fm-btn"><a onclick="severCheck();" id="to_login" href="javascript:void(0);">登录</a></div>
+           <div class="fm-forg" > <span class="label-extra"><a href="register.html">免费注册</a></span></div>
+  </div>      </div>
+    </div>
+    <div class="cbg_bottom"></div>
+</div>
+<!--登录　end -->
+<footer>
+<div class="member t-line"><div class="member_btm">
+<a href="#"> </a><a href="#"> 首页</a> | <a href="#">关于我们</a> | <a href="#"> 新闻动态 </a>| <a href="#">新闻动态 </a>| <a href="#"> 联系我们 </a>| <a href="#"> 留言板</a>
+<p>热门关键词：<a href="#">大数据</a> | 物联网 | 云储存 | 云计算 | 智能多媒体 | 服务器 | 云产品 | 网站及部署 | 计算机服务 | 海量存储 | 云服务器 </p>
+<p>&copy;2015 网站样板-IT 版权所有   手机版 | 本站使用凡科建站搭建 | 管理登录 </p>
+</div></div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.secrecy.basic.classifyinfo.mapper.ClassifyInfoMapper" >
+    <resultMap id="ClassifyInfo" type="com.secrecy.basic.classifyinfo.model.ClassifyInfo">
+		<id property="id" column="id" jdbcType="NUMERIC"/>
+		<result property="name" column="name" jdbcType="VARCHAR"/>
+		<result property="parentid" column="parentid" jdbcType="NUMERIC"/>
+		<result property="sn" column="sn" jdbcType="NUMERIC"/>
+		<result property="path" column="path" jdbcType="VARCHAR"/>
+	</resultMap>
+	<sql id="columns">
+		id,name,parentid,sn,path
+	</sql>
+	<sql id="dynamicWhere">
+		<where>
+			<if test="@Ognl@isNotEmpty(id)"> AND id  =#{id} </if>
+			<if test="@Ognl@isNotEmpty(name)"> AND instr(name,'${name}')>0  </if>
+			<if test="@Ognl@isNotEmpty(nameEquals)"> AND name  =#{nameEquals}  </if>
+			<if test="@Ognl@isNotEmpty(parentid)"> AND parentid  =#{parentid} </if>
+			<if test="@Ognl@isNotEmpty(sn)"> AND sn  =#{sn} </if>
+			<if test="@Ognl@isNotEmpty(path)"> AND instr(path,'${path}')>0  </if>
+			<if test="@Ognl@isNotEmpty(pathEquals)"> AND path  =#{pathEquals}  </if>
+			<if test="@Ognl@isNotEmpty(parentidQuery)"> AND ( id  =#{parentidQuery} or  parentid  =#{parentidQuery} )</if>
+			<if test="@Ognl@isNotEmpty(search)"> AND  
+					(	
+							instr(id,'${search}')>0    or 
+							instr(name,'${search}')>0    or 
+							instr(parentid,'${search}')>0    or 
+							instr(sn,'${search}')>0    or 
+							instr(path,'${search}')>0  
+					)  
+			</if>
+		</where>
+	</sql>
+	<insert id="add" parameterType="com.secrecy.basic.classifyinfo.model.ClassifyInfo">
+        insert into SEC_CLASSIFY_INFO
+		(<include refid="columns"/>)
+		values
+		(
+			#{id,jdbcType=NUMERIC}, 
+			#{name,jdbcType=VARCHAR}, 
+			#{parentid,jdbcType=NUMERIC}, 
+			#{sn,jdbcType=NUMERIC}, 
+			#{path,jdbcType=VARCHAR}
+		)
+    </insert>
+    <update id="update" parameterType="com.secrecy.basic.classifyinfo.model.ClassifyInfo">
+		update SEC_CLASSIFY_INFO set
+		id=#{id,jdbcType=NUMERIC},
+		name=#{name,jdbcType=VARCHAR},
+		parentid=#{parentid,jdbcType=NUMERIC},
+		sn=#{sn,jdbcType=NUMERIC},
+		path=#{path,jdbcType=VARCHAR}
+		WHERE
+		ID=#{id}
+	</update>
+	<select id="getById" parameterType="Long" resultType="com.secrecy.basic.classifyinfo.model.ClassifyInfo">
+        select <include refid="columns"/> from SEC_CLASSIFY_INFO where ID=#{id}
+    </select>
+     <delete id="delById" parameterType="Long" >
+        delete from  SEC_CLASSIFY_INFO where ID=#{id}
+    </delete>
+    <select id="queryTotal"  resultType="Integer">
+        select count(*) from SEC_CLASSIFY_INFO 
+        <include refid="dynamicWhere" /> 
+    </select>
+    <select id="queryAll"  resultMap="ClassifyInfo">
+        select <include refid="columns"/> from SEC_CLASSIFY_INFO 
+        <include refid="dynamicWhere" /> 
+        <if test="@Ognl@isNotEmpty(sort)">
+			order by ${sort} ${order}
+		</if>
+		<if test="@Ognl@isEmpty(sort)">
+			order by id  desc
+		</if>
+    </select>
+</mapper>
